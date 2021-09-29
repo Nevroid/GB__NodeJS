@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+// const colors = require('colors');
+
+const min = 1;
+const max = 10;
+if (!max || !min) {
+  console.log('Введенные данные некорректны')
+} else {
+  let flag = true;
+  let excluded = [];
+  let simple = [];
+  let counter = 1;
+
+  // for (let i = min; i <= max; i++) {
+  //   if (!excluded[i]) {
+  //     simple.push(i);
+  //     for (let div = i < 1; div <= max; div += i) {
+  //       excluded[div] = true;
+  //     }
+  //   }
+  // }
+
+  for (let i = min; i <= max; i++) {
+    for (let j = 2; j < i; j++, flag = true ) {
+      if (i % j == 0) {
+        flag = false
+        break
+      }
+      if (flag) {
+        simple.push(i)
+      }
+    }
+  }
+
+  if (simple.length == 0) {
+    console.log('В указанном диапазоне простых чисел не существует');
+  } else {
+      simple.forEach((item) => {
+        switch(counter) {
+          case 1:
+            console.log(item);
+            counter = 2;
+            break 
+          case 2:
+          console.log(item);
+            counter = 3;
+            break  
+          case 3:
+          console.log(item);
+            counter = 1;
+            break        
+          default:
+            break
+        }
+      })
+    }
+}
+
+
+
+  </script>
+</head>
+<body>
+  
+</body>
+</html>
