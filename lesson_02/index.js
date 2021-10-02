@@ -4,6 +4,12 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 const EventEmitter = require('events');
 dayjs.extend(customParseFormat);
 
+let timersCounter = 0;
+let userTimers = [];
+process.argv.forEach(element => {
+  userTimers.push(dayjs(element, "DD-MM-YYYY-HH-mm"))
+});
+userTimers.splice(0, 2);
 const userDate = dayjs(process.argv[2], "DD-MM-YYYY-HH-mm");
 const currentDate = dayjs()
 
@@ -13,17 +19,17 @@ const currentDate = dayjs()
 // console.log(test2)
 
 class Timer {
-  constructor(params) {
-    this.payload = {
-      fullUnixDate: params.valueOf(),
-      year: params.$y,
-      month: params.$M + 1,
-      day: params.$D,
-      hour: params.$H,
-      minute: params.$m,
-      second: params.$s
-    }  
-  }
+  constructor(params) {     
+      this.fullUnixDate = params.valueOf(),
+      this.id = timersCounter + 1,
+      this.year = params.$y,
+      this.month = params.$M + 1,
+      this.day = params.$D,
+      this.hour = params.$H,
+      this.minute = params.$m,
+      this.second = params.$s
+      timersCounter++
+    }
 };
 
 class MyEmitter extends EventEmitter {};
@@ -32,20 +38,22 @@ const emitterObject = new MyEmitter();
 
 const timerHandler = (payload) => {
   if (dayjs(payload.fullUnixDate).isValid() && (payload.fullUnixDate > dayjs(new Date).valueOf()) ) {
-    console.log(`Chosen end-point is: ${dayjs(payload.fullUnixDate)}.`)
-    console.log(`Commensing countdown...`)
+    
+    console.log(`Timer id#${payload.id}: Chosen end-point is ${dayjs(payload.fullUnixDate)}.`)
+    console.log(`Timer id#${payload.id}: Commensing countdown...`)
     let timerInstance = setInterval(() => {
       if (payload.fullUnixDate > dayjs(new Date).valueOf()) {
-        let anounce = `${(payload.fullUnixDate - dayjs(new Date).valueOf()) / 1000} seconds till chosen end-point`
+        let anounce = `Timer id#${payload.id}: ${Math.floor((payload.fullUnixDate - dayjs(new Date).valueOf()) / 1000)} seconds till chosen end-point`
         console.log(anounce)
       } else {
-        console.log(`You've reached the end-point`)
+        console.log(`Timer id#${payload.id}: You've reached the end-point`)
         clearInterval(timerInstance)
       }
+      
     }, 1000)
       
   } else {
-      console.log(`You've entered an invalid value`)
+      console.log(`Timer id#${payload.id}: You've entered an invalid value`)
     }
 };
 
@@ -55,5 +63,7 @@ const generateNewTimer = (params) => {
 
 emitterObject.on('startTimer', timerHandler);
 
-let timer = generateNewTimer(userDate);
-emitterObject.emit('startTimer', timer.payload);
+userTimers.forEach(element => {
+      let timer = generateNewTimer(element);
+      emitterObject.emit('startTimer', timer);
+});
