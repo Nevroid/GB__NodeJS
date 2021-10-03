@@ -4,7 +4,7 @@ const customParseFormat = require('dayjs/plugin/customParseFormat');
 const EventEmitter = require('events');
 dayjs.extend(customParseFormat);
 
-let timersCounter = 0;
+let timersCounter = 1;
 let userTimers = [];
 process.argv.forEach(element => {
   userTimers.push(dayjs(element, "DD-MM-YYYY-HH-mm"))
@@ -21,7 +21,7 @@ const currentDate = dayjs()
 class Timer {
   constructor(params) {     
       this.fullUnixDate = params.valueOf(),
-      this.id = timersCounter + 1,
+      this.id = timersCounter,
       this.year = params.$y,
       this.month = params.$M + 1,
       this.day = params.$D,
@@ -49,6 +49,10 @@ const timerHandler = (payload) => {
         console.log(`Timer id#${payload.id}: You've reached the end-point`)
         clearInterval(timerInstance)
       }
+      
+      setTimeout(() => {
+        console.clear()
+      }, 900)
       
     }, 1000)
       
